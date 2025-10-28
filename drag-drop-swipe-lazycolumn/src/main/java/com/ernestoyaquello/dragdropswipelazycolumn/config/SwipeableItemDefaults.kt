@@ -1,8 +1,5 @@
 package com.ernestoyaquello.dragdropswipelazycolumn.config
 
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.outlined.Delete
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
@@ -13,9 +10,11 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection.Ltr
 import androidx.compose.ui.unit.dp
+import com.ernestoyaquello.dragdropswipelazycolumn.R
 
 @Immutable
 object SwipeableItemDefaults {
@@ -412,10 +411,10 @@ data class SwipeableItemIcons private constructor(
          */
         @Composable
         fun createRemembered(
-            behindLeftToRightSwipeIconSwipeStarting: ImageVector? = Icons.Outlined.Delete,
-            behindRightToLeftSwipeIconSwipeStarting: ImageVector? = Icons.Outlined.Delete,
-            behindLeftToRightSwipeIconSwipeOngoing: ImageVector? = Icons.Filled.Delete,
-            behindRightToLeftSwipeIconSwipeOngoing: ImageVector? = Icons.Filled.Delete,
+            behindLeftToRightSwipeIconSwipeStarting: ImageVector? = ImageVector.vectorResource(R.drawable.delete),
+            behindRightToLeftSwipeIconSwipeStarting: ImageVector? = ImageVector.vectorResource(R.drawable.delete),
+            behindLeftToRightSwipeIconSwipeOngoing: ImageVector? = ImageVector.vectorResource(R.drawable.delete),
+            behindRightToLeftSwipeIconSwipeOngoing: ImageVector? = ImageVector.vectorResource(R.drawable.delete),
             behindLeftToRightSwipeIconSwipeFinishing: ImageVector? = behindLeftToRightSwipeIconSwipeOngoing,
             behindRightToLeftSwipeIconSwipeFinishing: ImageVector? = behindRightToLeftSwipeIconSwipeOngoing,
         ) = remember(
@@ -456,10 +455,10 @@ data class SwipeableItemIcons private constructor(
          */
         @Composable
         fun createRememberedWithLayoutDirection(
-            behindStartToEndSwipeIconSwipeStarting: ImageVector? = Icons.Outlined.Delete,
-            behindEndToStartSwipeIconSwipeStarting: ImageVector? = Icons.Outlined.Delete,
-            behindStartToEndSwipeIconSwipeOngoing: ImageVector? = Icons.Filled.Delete,
-            behindEndToStartSwipeIconSwipeOngoing: ImageVector? = Icons.Filled.Delete,
+            behindStartToEndSwipeIconSwipeStarting: ImageVector? = ImageVector.vectorResource(R.drawable.delete),
+            behindEndToStartSwipeIconSwipeStarting: ImageVector? = ImageVector.vectorResource(R.drawable.delete),
+            behindStartToEndSwipeIconSwipeOngoing: ImageVector? = ImageVector.vectorResource(R.drawable.delete),
+            behindEndToStartSwipeIconSwipeOngoing: ImageVector? = ImageVector.vectorResource(R.drawable.delete),
             behindStartToEndSwipeIconSwipeFinishing: ImageVector? = behindStartToEndSwipeIconSwipeOngoing,
             behindEndToStartSwipeIconSwipeFinishing: ImageVector? = behindEndToStartSwipeIconSwipeOngoing,
         ): SwipeableItemIcons {
@@ -521,8 +520,8 @@ data class SwipeableItemIcons private constructor(
          */
         @Composable
         fun createRemembered(
-            behindSwipeIconSwipeStarting: ImageVector? = Icons.Outlined.Delete,
-            behindSwipeIconSwipeOngoing: ImageVector? = Icons.Filled.Delete,
+            behindSwipeIconSwipeStarting: ImageVector? = ImageVector.vectorResource(R.drawable.delete),
+            behindSwipeIconSwipeOngoing: ImageVector? = ImageVector.vectorResource(R.drawable.delete),
             behindSwipeIconSwipeFinishing: ImageVector? = behindSwipeIconSwipeOngoing,
         ) = createRemembered(
             behindLeftToRightSwipeIconSwipeStarting = behindSwipeIconSwipeStarting,

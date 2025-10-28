@@ -27,13 +27,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.Delete
-import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
@@ -64,6 +57,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -837,12 +831,12 @@ private fun SwipeableItem_InteractivePreview_Customized() {
                 behindEndToStartSwipeContainerShape = MaterialTheme.shapes.medium,
             ),
             icons = SwipeableItemIcons.createRememberedWithLayoutDirection(
-                behindStartToEndSwipeIconSwipeStarting = Icons.Outlined.FavoriteBorder,
-                behindStartToEndSwipeIconSwipeOngoing = Icons.Filled.Favorite,
-                behindStartToEndSwipeIconSwipeFinishing = Icons.Filled.Done,
-                behindEndToStartSwipeIconSwipeStarting = Icons.Outlined.Delete,
-                behindEndToStartSwipeIconSwipeOngoing = Icons.Filled.Delete,
-                behindEndToStartSwipeIconSwipeFinishing = Icons.Filled.Clear,
+                behindStartToEndSwipeIconSwipeStarting = ImageVector.vectorResource(R.drawable.favorite),
+                behindStartToEndSwipeIconSwipeOngoing = ImageVector.vectorResource(R.drawable.favorite),
+                behindStartToEndSwipeIconSwipeFinishing = ImageVector.vectorResource(R.drawable.done),
+                behindEndToStartSwipeIconSwipeStarting = ImageVector.vectorResource(R.drawable.delete),
+                behindEndToStartSwipeIconSwipeOngoing = ImageVector.vectorResource(R.drawable.delete),
+                behindEndToStartSwipeIconSwipeFinishing = ImageVector.vectorResource(R.drawable.close),
             ),
             onClick = { numberOfClicks++ },
             onLongClick = { numberOfLongClicks++ },

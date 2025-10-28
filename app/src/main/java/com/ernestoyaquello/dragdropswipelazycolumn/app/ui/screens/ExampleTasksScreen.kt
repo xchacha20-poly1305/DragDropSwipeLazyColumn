@@ -10,15 +10,6 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Archive
-import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.DeleteSweep
-import androidx.compose.material.icons.filled.DragHandle
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.outlined.Archive
-import androidx.compose.material.icons.outlined.DeleteSweep
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -40,9 +31,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -261,12 +254,12 @@ private fun DraggableSwipeableItemScope<ExampleTask>.Task(
             containersBackgroundShape = MaterialTheme.shapes.medium,
         ),
         icons = SwipeableItemIcons.createRememberedWithLayoutDirection(
-            behindStartToEndSwipeIconSwipeStarting = Icons.Outlined.Archive,
-            behindStartToEndSwipeIconSwipeOngoing = Icons.Filled.Archive,
-            behindStartToEndSwipeIconSwipeFinishing = Icons.Filled.Archive,
-            behindEndToStartSwipeIconSwipeStarting = Icons.Outlined.DeleteSweep,
-            behindEndToStartSwipeIconSwipeOngoing = Icons.Filled.DeleteSweep,
-            behindEndToStartSwipeIconSwipeFinishing = Icons.Filled.Delete,
+            behindStartToEndSwipeIconSwipeStarting = ImageVector.vectorResource(com.ernestoyaquello.dragdropswipelazycolumn.R.drawable.archive),
+            behindStartToEndSwipeIconSwipeOngoing = ImageVector.vectorResource(com.ernestoyaquello.dragdropswipelazycolumn.R.drawable.archive),
+            behindStartToEndSwipeIconSwipeFinishing = ImageVector.vectorResource(com.ernestoyaquello.dragdropswipelazycolumn.R.drawable.archive),
+            behindEndToStartSwipeIconSwipeStarting = ImageVector.vectorResource(com.ernestoyaquello.dragdropswipelazycolumn.R.drawable.delete_sweep),
+            behindEndToStartSwipeIconSwipeOngoing = ImageVector.vectorResource(com.ernestoyaquello.dragdropswipelazycolumn.R.drawable.delete_sweep),
+            behindEndToStartSwipeIconSwipeFinishing = ImageVector.vectorResource(com.ernestoyaquello.dragdropswipelazycolumn.R.drawable.delete),
         ),
         minHeight = 60.dp,
         allowedSwipeDirections = if (!task.isLocked) {
@@ -332,7 +325,7 @@ internal fun DraggableSwipeableItemScope<ExampleTask>.TaskLayout(
                     modifier = Modifier
                         .dragDropModifier()
                         .size(24.dp),
-                    imageVector = Icons.Default.DragHandle,
+                    imageVector = ImageVector.vectorResource(com.ernestoyaquello.dragdropswipelazycolumn.R.drawable.drag_handle),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSecondaryContainer,
                 )
@@ -340,7 +333,7 @@ internal fun DraggableSwipeableItemScope<ExampleTask>.TaskLayout(
                 // If the task is locked, we don't allow dragging it, so we just display a lock icon
                 Icon(
                     modifier = Modifier.size(24.dp),
-                    imageVector = Icons.Default.Lock,
+                    imageVector = ImageVector.vectorResource(com.ernestoyaquello.dragdropswipelazycolumn.R.drawable.lock),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSecondaryContainer,
                 )
@@ -397,7 +390,7 @@ private fun AddNewTaskFloatingActionButton(
         onClick = onClick,
     ) {
         Icon(
-            imageVector = Icons.Rounded.Add,
+            imageVector = ImageVector.vectorResource(com.ernestoyaquello.dragdropswipelazycolumn.R.drawable.add),
             contentDescription = "Add task",
         )
     }

@@ -25,9 +25,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.overscroll
 import androidx.compose.foundation.rememberOverscrollEffect
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -44,9 +41,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import com.ernestoyaquello.dragdropswipelazycolumn.AllowedSwipeDirections.All
 import com.ernestoyaquello.dragdropswipelazycolumn.AllowedSwipeDirections.None
@@ -772,7 +771,7 @@ internal fun DraggableSwipeableItemScope<PreviewItem>.PreviewDraggableItemLayout
                     modifier = Modifier
                         .dragDropModifier()
                         .size(24.dp),
-                    imageVector = Icons.Default.Menu,
+                    imageVector = ImageVector.vectorResource(R.drawable.drag_handle),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSecondaryContainer,
                 )
@@ -780,7 +779,7 @@ internal fun DraggableSwipeableItemScope<PreviewItem>.PreviewDraggableItemLayout
                 // If the item is locked, we don't allow dragging it, so we just display a lock icon
                 Icon(
                     modifier = Modifier.size(24.dp),
-                    imageVector = Icons.Default.Lock,
+                    imageVector = ImageVector.vectorResource(R.drawable.lock),
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onSecondaryContainer,
                 )

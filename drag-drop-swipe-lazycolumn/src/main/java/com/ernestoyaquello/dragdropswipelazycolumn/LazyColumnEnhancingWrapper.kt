@@ -15,8 +15,6 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
@@ -34,8 +32,10 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import com.ernestoyaquello.dragdropswipelazycolumn.AllowedSwipeDirections.All
@@ -309,7 +309,7 @@ private fun AddNewItemFloatingActionButton(
         onClick = onAddNewItemClick,
     ) {
         Icon(
-            imageVector = Icons.Rounded.Add,
+            imageVector = ImageVector.vectorResource(R.drawable.add),
             contentDescription = "Add item",
         )
     }
