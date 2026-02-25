@@ -1,8 +1,44 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
-    alias(libs.plugins.kotlin.multiplatform) apply false
-    alias(libs.plugins.kotlin.compose) apply false
-    alias(libs.plugins.compose.multiplatform) apply false
-    alias(libs.plugins.android.kotlin.multiplatform.library) apply false
-    alias(libs.plugins.vanniktech.maven.publish) apply false
+    id("org.jetbrains.kotlin.multiplatform")
+    id("com.android.kotlin.multiplatform.library")
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.compose.multiplatform)
+}
+
+group = "com.ernestoyaquello.dragdropswipelazycolumn"
+version = "0.10.2"
+
+kotlin {
+    androidLibrary {
+        namespace = "com.ernestoyaquello.dragdropswipelazycolumn"
+        compileSdk = 36
+        minSdk = 23
+        androidResources {
+            enable = true
+        }
+    }
+
+    jvm("desktop") {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_21)
+        }
+    }
+
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(libs.jetbrains.compose.runtime)
+                implementation(libs.jetbrains.compose.foundation)
+                implementation(libs.jetbrains.compose.material3)
+                implementation(libs.jetbrains.compose.components.resources)
+                implementation(libs.kotlinx.collections.immutable)
+            }
+        }
+    }
+}
+
+compose.resources {
+    packageOfResClass = "com.ernestoyaquello.dragdropswipelazycolumn.resources"
 }
