@@ -1,46 +1,43 @@
-import com.android.build.api.dsl.LibraryExtension
-import org.gradle.kotlin.dsl.configure
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    alias(libs.plugins.android.library)
-    alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.kotlin.multiplatform)
+    alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.compose.multiplatform)
+    alias(libs.plugins.android.kotlin.multiplatform.library)
     alias(libs.plugins.vanniktech.maven.publish)
 }
 
 group = "com.ernestoyaquello.dragdropswipelazycolumn"
 version = "0.10.2"
 
-configure<LibraryExtension> {
-    namespace = "com.ernestoyaquello.dragdropswipelazycolumn"
-    compileSdk = 36
-
-    defaultConfig {
+kotlin {
+    androidLibrary {
+        namespace = "com.ernestoyaquello.dragdropswipelazycolumn"
+        compileSdk = 36
         minSdk = 23
-        consumerProguardFiles("consumer-rules.pro")
-    }
-
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles("proguard-rules.pro")
+        androidResources {
+            enable = true
         }
     }
 
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_19
-        targetCompatibility = JavaVersion.VERSION_19
+    jvm("desktop") {
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_21)
+        }
     }
 
-    buildFeatures {
-        compose = true
+    sourceSets {
+        val commonMain by getting {
+            dependencies {
+                implementation(libs.jetbrains.compose.runtime)
+                implementation(libs.jetbrains.compose.foundation)
+                implementation(libs.jetbrains.compose.material3)
+                implementation(libs.jetbrains.compose.material.icons.core)
+                implementation(libs.kotlinx.collections.immutable)
+            }
+        }
     }
-}
-
-dependencies {
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.kotlinx.collections.immutable)
-    implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.material.icons.core)
 }
 
 mavenPublishing {
@@ -59,7 +56,7 @@ mavenPublishing {
         inceptionYear.set("2025")
         description.set(
             "Kotlin Android library for Jetpack Compose that implements a lazy column" +
-                    "with drag-and-drop reordering and swipe-to-dismiss functionality.",
+                "with drag-and-drop reordering and swipe-to-dismiss functionality.",
         )
 
         licenses {
