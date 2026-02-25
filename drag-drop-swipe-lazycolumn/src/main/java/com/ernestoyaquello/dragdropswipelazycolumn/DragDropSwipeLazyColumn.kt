@@ -11,32 +11,22 @@ import androidx.compose.foundation.gestures.ScrollableDefaults
 import androidx.compose.foundation.gestures.animateScrollBy
 import androidx.compose.foundation.gestures.scrollBy
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.overscroll
 import androidx.compose.foundation.rememberOverscrollEffect
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -53,10 +43,6 @@ import com.ernestoyaquello.dragdropswipelazycolumn.AllowedSwipeDirections.All
 import com.ernestoyaquello.dragdropswipelazycolumn.AllowedSwipeDirections.None
 import com.ernestoyaquello.dragdropswipelazycolumn.config.DraggableSwipeableItemColors
 import com.ernestoyaquello.dragdropswipelazycolumn.config.SwipeableItemShapes
-import com.ernestoyaquello.dragdropswipelazycolumn.preview.MultiPreview
-import com.ernestoyaquello.dragdropswipelazycolumn.preview.PreviewItem
-import com.ernestoyaquello.dragdropswipelazycolumn.preview.PreviewViewModel.Companion.rememberPreviewViewModel
-import com.ernestoyaquello.dragdropswipelazycolumn.preview.ThemedPreview
 import com.ernestoyaquello.dragdropswipelazycolumn.state.DragDropSwipeLazyColumnState
 import com.ernestoyaquello.dragdropswipelazycolumn.state.DraggableSwipeableItemState
 import com.ernestoyaquello.dragdropswipelazycolumn.state.rememberDragDropSwipeLazyColumnState
@@ -896,104 +882,3 @@ data class OrderedItem<TItem>(
     val initialIndex: Int,
     val newIndex: Int = initialIndex,
 )
-
-@Composable
-@MultiPreview
-private fun DragDropSwipeLazyColumn_InteractivePreview() {
-    val viewModel = rememberPreviewViewModel(numberOfItems = 30)
-    val state by viewModel.state.collectAsState()
-
-    ThemedPreview {
-        state.items?.let { items ->
-            DragDropSwipeLazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                items = items,
-                key = remember { { it.id } },
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                onIndicesChangedViaDragAndDrop = viewModel::onReorderedItems,
-            ) { _, item ->
-                DraggableSwipeableItem(
-                    modifier = Modifier.animateDraggableSwipeableItem(),
-                    shapes = SwipeableItemShapes.createRemembered(
-                        containersBackgroundShape = MaterialTheme.shapes.medium,
-                    ),
-                    colors = DraggableSwipeableItemColors.createRemembered(
-                        containerBackgroundColor = if (!item.locked) {
-                            MaterialTheme.colorScheme.primaryContainer
-                        } else {
-                            MaterialTheme.colorScheme.secondaryContainer
-                        },
-                    ),
-                    minHeight = 56.dp,
-                    allowedSwipeDirections = if (!item.locked) All else None,
-                    onClick = { viewModel.onItemClick(item) },
-                    onLongClick = { viewModel.onItemLongClick(item) },
-                    onSwipeDismiss = { viewModel.onItemSwipeDismiss(item) },
-                ) {
-                    PreviewDraggableItemLayout(
-                        modifier = Modifier
-                            .align(Alignment.Center)
-                            .padding(horizontal = 12.dp, vertical = 8.dp),
-                        item = item,
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-internal fun DraggableSwipeableItemScope<PreviewItem>.PreviewDraggableItemLayout(
-    modifier: Modifier,
-    item: PreviewItem,
-) {
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(16.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Column(
-            modifier = Modifier
-                .weight(1f)
-                .animateContentSize(),
-        ) {
-            Text(
-                text = item.title,
-                color = MaterialTheme.colorScheme.onSecondaryContainer,
-            )
-
-            if (item.locked) {
-                Text(
-                    text = "Long tap to unlock",
-                    color = MaterialTheme.colorScheme.onSecondaryContainer,
-                    style = MaterialTheme.typography.bodySmall,
-                )
-            }
-        }
-
-        Crossfade(
-            targetState = item.locked,
-        ) { itemLocked ->
-            if (!itemLocked) {
-                // Apply the drag-drop modifier to the drag handle icon
-                Icon(
-                    modifier = Modifier
-                        .dragDropModifier()
-                        .size(24.dp),
-                    imageVector = Icons.Default.Menu,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                )
-            } else {
-                // If the item is locked, we don't allow dragging it, so we just display a lock icon
-                Icon(
-                    modifier = Modifier.size(24.dp),
-                    imageVector = Icons.Default.Lock,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                )
-            }
-        }
-    }
-}

@@ -21,5 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "DragDropSwipeLazyColumn"
 
-include(":app")
 include(":drag-drop-swipe-lazycolumn")

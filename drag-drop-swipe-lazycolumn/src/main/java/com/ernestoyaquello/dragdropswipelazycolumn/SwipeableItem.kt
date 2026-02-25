@@ -19,14 +19,12 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Delete
@@ -37,14 +35,12 @@ import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -64,7 +60,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.LayoutDirection
@@ -87,8 +82,6 @@ import com.ernestoyaquello.dragdropswipelazycolumn.config.SwipeableItemColors
 import com.ernestoyaquello.dragdropswipelazycolumn.config.SwipeableItemDefaults
 import com.ernestoyaquello.dragdropswipelazycolumn.config.SwipeableItemIcons
 import com.ernestoyaquello.dragdropswipelazycolumn.config.SwipeableItemShapes
-import com.ernestoyaquello.dragdropswipelazycolumn.preview.MultiPreview
-import com.ernestoyaquello.dragdropswipelazycolumn.preview.ThemedPreview
 import com.ernestoyaquello.dragdropswipelazycolumn.state.SwipeableItemState
 import com.ernestoyaquello.dragdropswipelazycolumn.state.rememberSwipeableItemState
 import kotlinx.coroutines.delay
@@ -769,127 +762,5 @@ fun DismissSwipeDirection.toLayoutAdjustedDirection(
     return when (this) {
         LeftToRight -> if (layoutDirection == Ltr) StartToEnd else EndToStart
         RightToLeft -> if (layoutDirection == Ltr) EndToStart else StartToEnd
-    }
-}
-
-@Composable
-@MultiPreview
-private fun SwipeableItem_InteractivePreview_Basic() {
-    val swipeState = rememberSwipeableItemState()
-    var numberOfClicks by remember { mutableIntStateOf(0) }
-    var numberOfLongClicks by remember { mutableIntStateOf(0) }
-    var numberOfSwipes by remember { mutableIntStateOf(0) }
-
-    ThemedPreview {
-        SwipeableItem(
-            state = swipeState,
-            onClick = { numberOfClicks++ },
-            onLongClick = { numberOfLongClicks++ },
-            onSwipeDismiss = { numberOfSwipes++ },
-        ) {
-            PreviewItem(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
-                textData = "(full swipes: $numberOfSwipes, clicks: $numberOfClicks, long clicks: $numberOfLongClicks)",
-            )
-        }
-
-        if (numberOfSwipes > 0) {
-            LaunchedEffect(numberOfSwipes) {
-                // Reset after a while so we can keep clicking, swiping, etc
-                delay(300)
-                swipeState.reset()
-            }
-        }
-    }
-}
-
-@Composable
-@MultiPreview
-private fun SwipeableItem_InteractivePreview_Customized() {
-    val swipeState = rememberSwipeableItemState()
-    var numberOfClicks by remember { mutableIntStateOf(0) }
-    var numberOfLongClicks by remember { mutableIntStateOf(0) }
-    var numberOfDeleted by remember { mutableIntStateOf(0) }
-    var numberOfFavorited by remember { mutableIntStateOf(0) }
-
-    ThemedPreview {
-        val layoutDirection = LocalLayoutDirection.current
-        SwipeableItem(
-            modifier = Modifier
-                .background(color = MaterialTheme.colorScheme.background)
-                .padding(vertical = 16.dp),
-            state = swipeState,
-            minHeight = 60.dp,
-            contentStartPadding = 16.dp,
-            contentEndPadding = 16.dp,
-            colors = SwipeableItemColors.createRememberedWithLayoutDirection(
-                containerBackgroundColor = MaterialTheme.colorScheme.primaryContainer,
-                behindStartToEndSwipeContainerBackgroundColor = MaterialTheme.colorScheme.secondary,
-                behindStartToEndSwipeIconColor = MaterialTheme.colorScheme.onSecondary,
-                behindEndToStartSwipeContainerBackgroundColor = MaterialTheme.colorScheme.error,
-                behindEndToStartSwipeIconColor = MaterialTheme.colorScheme.onError,
-            ),
-            shapes = SwipeableItemShapes.createRememberedWithLayoutDirection(
-                containerBackgroundShape = MaterialTheme.shapes.extraSmall,
-                behindStartToEndSwipeContainerShape = CircleShape,
-                behindEndToStartSwipeContainerShape = MaterialTheme.shapes.medium,
-            ),
-            icons = SwipeableItemIcons.createRememberedWithLayoutDirection(
-                behindStartToEndSwipeIconSwipeStarting = Icons.Outlined.FavoriteBorder,
-                behindStartToEndSwipeIconSwipeOngoing = Icons.Filled.Favorite,
-                behindStartToEndSwipeIconSwipeFinishing = Icons.Filled.Done,
-                behindEndToStartSwipeIconSwipeStarting = Icons.Outlined.Delete,
-                behindEndToStartSwipeIconSwipeOngoing = Icons.Filled.Delete,
-                behindEndToStartSwipeIconSwipeFinishing = Icons.Filled.Clear,
-            ),
-            onClick = { numberOfClicks++ },
-            onLongClick = { numberOfLongClicks++ },
-            onSwipeDismiss = { dismissDirection ->
-                when (dismissDirection.toLayoutAdjustedDirection((layoutDirection))) {
-                    StartToEnd -> numberOfFavorited++
-                    EndToStart -> numberOfDeleted++
-                }
-            },
-        ) {
-            PreviewItem(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(horizontal = 12.dp, vertical = 8.dp),
-                textData = "(deletions: $numberOfDeleted, favorited: $numberOfFavorited, clicks: $numberOfClicks, long clicks: $numberOfLongClicks)",
-            )
-        }
-
-        if (numberOfDeleted > 0 || numberOfFavorited > 0) {
-            LaunchedEffect(numberOfDeleted + numberOfFavorited) {
-                // Reset after a while so we can keep clicking, swiping, etc
-                delay(300)
-                swipeState.reset()
-            }
-        }
-    }
-}
-
-@Composable
-private fun PreviewItem(
-    modifier: Modifier = Modifier,
-    textData: String,
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-    ) {
-        Text(
-            text = "Swipe or click",
-            textAlign = TextAlign.Center,
-            color = MaterialTheme.colorScheme.onSecondaryContainer,
-        )
-        Text(
-            text = textData,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.onSecondaryContainer,
-        )
     }
 }

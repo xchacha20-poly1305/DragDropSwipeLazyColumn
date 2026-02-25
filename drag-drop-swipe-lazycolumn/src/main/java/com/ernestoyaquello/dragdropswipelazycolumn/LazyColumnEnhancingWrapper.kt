@@ -6,26 +6,17 @@ import androidx.compose.animation.core.Spring.DampingRatioNoBouncy
 import androidx.compose.animation.core.Spring.StiffnessMedium
 import androidx.compose.animation.core.VectorConverter
 import androidx.compose.animation.core.spring
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material3.Icon
-import androidx.compose.material3.LargeFloatingActionButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -38,14 +29,10 @@ import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.layout.layout
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.dp
 import com.ernestoyaquello.dragdropswipelazycolumn.AllowedSwipeDirections.All
 import com.ernestoyaquello.dragdropswipelazycolumn.AllowedSwipeDirections.None
 import com.ernestoyaquello.dragdropswipelazycolumn.config.DraggableSwipeableItemColors
 import com.ernestoyaquello.dragdropswipelazycolumn.config.SwipeableItemShapes
-import com.ernestoyaquello.dragdropswipelazycolumn.preview.MultiPreview
-import com.ernestoyaquello.dragdropswipelazycolumn.preview.PreviewViewModel.Companion.rememberPreviewViewModel
-import com.ernestoyaquello.dragdropswipelazycolumn.preview.ThemedPreview
 import com.ernestoyaquello.dragdropswipelazycolumn.state.rememberDragDropSwipeLazyColumnState
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
@@ -273,85 +260,5 @@ private fun <TItem> EnsureNewItemAddedAtTheEndIsScrolledTo(
                     itemKeysState.value = itemKeys
                 }
             }
-    }
-}
-
-@Composable
-@MultiPreview
-private fun LazyColumnEnhancingWrapper_InteractivePreview() {
-    val viewModel = rememberPreviewViewModel()
-    val state by viewModel.state.collectAsState()
-
-    ThemedPreview {
-        Scaffold(
-            modifier = Modifier.background(MaterialTheme.colorScheme.background),
-            floatingActionButton = {
-                AddNewItemFloatingActionButton(viewModel::addNewItem)
-            },
-        ) { innerPadding ->
-            state.items?.let { items ->
-                // This state must be passed down both to the list wrapper and to the list!
-                val listState = rememberDragDropSwipeLazyColumnState()
-
-                LazyColumnEnhancingWrapper(
-                    modifier = Modifier.padding(innerPadding),
-                    state = listState.lazyListState,
-                    items = items,
-                    key = remember { { it.id } },
-                ) { listModifier, getItemModifier ->
-                    // We are using a DragDropSwipeLazyColumn, but it could just be a LazyColumn
-                    DragDropSwipeLazyColumn(
-                        modifier = listModifier.fillMaxSize(),
-                        state = listState,
-                        items = items,
-                        key = remember { { it.id } },
-                        contentPadding = PaddingValues(16.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp),
-                        onIndicesChangedViaDragAndDrop = viewModel::onReorderedItems,
-                    ) { index, item ->
-                        val itemModifier = getItemModifier(index, item)
-                        DraggableSwipeableItem(
-                            modifier = itemModifier.animateDraggableSwipeableItem(),
-                            shapes = SwipeableItemShapes.createRemembered(
-                                containersBackgroundShape = MaterialTheme.shapes.medium,
-                            ),
-                            colors = DraggableSwipeableItemColors.createRemembered(
-                                containerBackgroundColor = if (!item.locked) {
-                                    MaterialTheme.colorScheme.primaryContainer
-                                } else {
-                                    MaterialTheme.colorScheme.secondaryContainer
-                                },
-                            ),
-                            minHeight = 56.dp,
-                            allowedSwipeDirections = if (!item.locked) All else None,
-                            onClick = { viewModel.onItemClick(item) },
-                            onLongClick = { viewModel.onItemLongClick(item) },
-                            onSwipeDismiss = { viewModel.onItemSwipeDismiss(item) },
-                        ) {
-                            PreviewDraggableItemLayout(
-                                modifier = Modifier
-                                    .align(Alignment.Center)
-                                    .padding(horizontal = 12.dp, vertical = 8.dp),
-                                item = item,
-                            )
-                        }
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun AddNewItemFloatingActionButton(
-    onAddNewItemClick: () -> Unit,
-) {
-    LargeFloatingActionButton(
-        onClick = onAddNewItemClick,
-    ) {
-        Icon(
-            imageVector = Icons.Rounded.Add,
-            contentDescription = "Add item",
-        )
     }
 }

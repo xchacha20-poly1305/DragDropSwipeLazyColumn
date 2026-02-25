@@ -1,4 +1,0 @@
-<resources>
-    <style name="Theme.DragDropSwipeLazyColumn" parent="android:Theme.Material.NoActionBar">
-    </style>
-</resources>
