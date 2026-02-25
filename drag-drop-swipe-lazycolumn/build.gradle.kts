@@ -33,11 +33,15 @@ kotlin {
                 implementation(libs.jetbrains.compose.runtime)
                 implementation(libs.jetbrains.compose.foundation)
                 implementation(libs.jetbrains.compose.material3)
-                implementation(libs.jetbrains.compose.material.icons.core)
+                implementation(libs.jetbrains.compose.components.resources)
                 implementation(libs.kotlinx.collections.immutable)
             }
         }
     }
+}
+
+compose.resources {
+    packageOfResClass = "com.ernestoyaquello.dragdropswipelazycolumn.resources"
 }
 
 mavenPublishing {

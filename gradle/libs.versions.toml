@@ -3,7 +3,6 @@ agp = "9.0.0"
 kotlin = "2.3.20-Beta2"
 composeMultiplatform = "1.10.1"
 composeMaterial3 = "1.11.0-alpha02"
-composeMaterialIconsCore = "1.7.3"
 immutableCollections = "0.4.0"
 vanniktechMavenPublish = "0.36.0"
 
@@ -11,7 +10,7 @@ vanniktechMavenPublish = "0.36.0"
 jetbrains-compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "composeMultiplatform" }
 jetbrains-compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "composeMultiplatform" }
 jetbrains-compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "composeMaterial3" }
-jetbrains-compose-material-icons-core = { module = "org.jetbrains.compose.material:material-icons-core", version.ref = "composeMaterialIconsCore" }
+jetbrains-compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
 kotlinx-collections-immutable = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "immutableCollections" }
 
 [plugins]
