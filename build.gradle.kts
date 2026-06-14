@@ -11,9 +11,9 @@ group = "com.ernestoyaquello.dragdropswipelazycolumn"
 version = "0.10.2"
 
 kotlin {
-    androidLibrary {
+    android {
         namespace = "com.ernestoyaquello.dragdropswipelazycolumn"
-        compileSdk = 36
+        compileSdk = 37
         minSdk = 23
         androidResources {
             enable = true
