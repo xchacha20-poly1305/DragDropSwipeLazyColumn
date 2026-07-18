@@ -13,6 +13,7 @@ version = "0.10.2"
 kotlin {
     android {
         namespace = "com.ernestoyaquello.dragdropswipelazycolumn"
+        buildToolsVersion = "37.0.0"
         compileSdk = 37
         minSdk = 23
         androidResources {
@@ -27,7 +28,7 @@ kotlin {
     }
 
     sourceSets {
-        val commonMain by getting {
+        val commonMain = getByName("commonMain") {
             dependencies {
                 implementation(libs.jetbrains.compose.runtime)
                 implementation(libs.jetbrains.compose.foundation)
