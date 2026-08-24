@@ -1,10 +1,7 @@
 package com.ernestoyaquello.dragdropswipelazycolumn
 
-import androidx.compose.animation.Crossfade
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.SpringSpec
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.OverscrollEffect
 import androidx.compose.foundation.gestures.FlingBehavior
 import androidx.compose.foundation.gestures.ScrollableDefaults
@@ -14,20 +11,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.overscroll
 import androidx.compose.foundation.rememberOverscrollEffect
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableIntState
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.Stable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,10 +33,6 @@ import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastCoerceAtLeast
 import androidx.compose.ui.util.fastCoerceAtMost
-import com.ernestoyaquello.dragdropswipelazycolumn.AllowedSwipeDirections.All
-import com.ernestoyaquello.dragdropswipelazycolumn.AllowedSwipeDirections.None
-import com.ernestoyaquello.dragdropswipelazycolumn.config.DraggableSwipeableItemColors
-import com.ernestoyaquello.dragdropswipelazycolumn.config.SwipeableItemShapes
 import com.ernestoyaquello.dragdropswipelazycolumn.state.DragDropSwipeLazyColumnState
 import com.ernestoyaquello.dragdropswipelazycolumn.state.DraggableSwipeableItemState
 import com.ernestoyaquello.dragdropswipelazycolumn.state.rememberDragDropSwipeLazyColumnState
@@ -57,6 +47,7 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlin.math.abs
 import kotlin.math.sign
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * A lazy column with drag-and-drop reordering, as well swipe-to-dismiss functionality.
@@ -96,13 +87,15 @@ import kotlin.math.sign
  * @param overscrollEffect the [OverscrollEffect] that will be used to render overscroll for this
  *   layout. Note that the [OverscrollEffect.node] will be applied internally as well, so you do not
  *   need to use [Modifier.overscroll] separately.
+ * @param fixedTopItemCount The number of items at the top of the list that should remain fixed in
+ *   place and never be displaced by drag-and-drop reordering. These items should also have
+ *   `dragDropEnabled = false` set on their [DraggableSwipeableItem]. Defaults to `0`.
  * @param onIndicesChangedViaDragAndDrop The callback that will be invoked when the user drops an
  *   item after dragging it, which will contain a list with all the items whose indices have changed.
  *   This list will contain the dropped item and the ones shifted to accommodate its repositioning.
  * @param itemContentIndexed The content displayed by a single item. Here, you must use
  *   [DraggableSwipeableItem] as the only root composable to implement the layout of each item.
  */
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun <TItem> DragDropSwipeLazyColumn(
     modifier: Modifier = Modifier,
@@ -117,6 +110,7 @@ fun <TItem> DragDropSwipeLazyColumn(
     flingBehavior: FlingBehavior = ScrollableDefaults.flingBehavior(),
     userScrollEnabled: Boolean = true,
     overscrollEffect: OverscrollEffect? = rememberOverscrollEffect(),
+    fixedTopItemCount: Int = 0,
     onIndicesChangedViaDragAndDrop: (List<OrderedItem<TItem>>) -> Unit,
     itemContentIndexed: @Composable DraggableSwipeableItemScope<TItem>.(Int, TItem) -> Unit,
 ) {
@@ -257,6 +251,7 @@ fun <TItem> DragDropSwipeLazyColumn(
                 orderedItemsState = orderedItemsState,
                 currentItemIndexState = indexState,
                 layoutReversed = reverseLayout,
+                fixedTopItemCount = fixedTopItemCount,
                 key = key,
                 onItemsReordered = { reorderedItems ->
                     orderedItemsState.value = reorderedItems
@@ -371,7 +366,7 @@ private fun ScrollToRevealDraggedItemIfNeeded(
         }
             .filter { (_, currentDragIndex, currentItemIndex) ->
                 itemState.isBeingDragged && // item must be being dragged
-                    currentDragIndex == currentItemIndex // item must be positioned correctly
+                        currentDragIndex == currentItemIndex // item must be positioned correctly
             }
             .map { (offsetTargetInPx, _, _) ->
                 val draggedItemInfo = lazyListState.layoutInfo.visibleItemsInfo.find { itemInfo ->
@@ -434,7 +429,7 @@ private fun ScrollToRevealDraggedItemIfNeeded(
                 }
 
                 // Delay the next scroll event to avoid scrolling too fast
-                delay(8L)
+                delay(8.milliseconds)
             }
     }
 }
@@ -446,6 +441,7 @@ private fun <TItem> ReorderItemsIfNeeded(
     orderedItemsState: MutableState<ImmutableList<OrderedItem<TItem>>>,
     currentItemIndexState: MutableIntState,
     layoutReversed: Boolean,
+    fixedTopItemCount: Int,
     key: (TItem) -> Any,
     onItemsReordered: (ImmutableList<OrderedItem<TItem>>) -> Unit,
 ) {
@@ -455,6 +451,7 @@ private fun <TItem> ReorderItemsIfNeeded(
         orderedItemsState,
         currentItemIndexState,
         layoutReversed,
+        fixedTopItemCount,
         key,
         onItemsReordered,
     ) {
@@ -467,7 +464,7 @@ private fun <TItem> ReorderItemsIfNeeded(
         }
             .filter { (offsetTargetInPx, currentDragIndex, _) ->
                 offsetTargetInPx != 0f && // item is not on its original position
-                    (currentDragIndex == null || currentDragIndex == currentItemIndexState.intValue) // item no longer dragged, or dragged at its current position
+                        (currentDragIndex == null || currentDragIndex == currentItemIndexState.intValue) // item no longer dragged, or dragged at its current position
             }
             .map { (offsetTargetInPx, _, layoutInfo) ->
                 offsetTargetInPx to layoutInfo
@@ -491,7 +488,16 @@ private fun <TItem> ReorderItemsIfNeeded(
                 val currentDraggedItemCenter = initialDraggedItemCenter + offsetTargetInPx
                 val distanceToDraggedItemCenter =
                     abs(currentDraggedItemCenter - initialDraggedItemCenter)
-                val closestItemInfo = layoutInfo.visibleItemsInfo.minBy { otherItemInfo ->
+                val candidateItems = layoutInfo.visibleItemsInfo.filter {
+                    it.index >= fixedTopItemCount
+                }
+                if (candidateItems.isEmpty()) {
+                    itemState.update {
+                        copy(currentDragIndex = currentDragIndex?.takeUnless { !itemState.isBeingDragged })
+                    }
+                    return@collect
+                }
+                val closestItemInfo = candidateItems.minBy { otherItemInfo ->
                     val otherItemCenter = otherItemInfo.offset + (otherItemInfo.size / 2f)
                     val distanceToOtherCenter = abs(otherItemCenter - currentDraggedItemCenter)
                     if (otherItemInfo.key != draggedItemInfo.key && distanceToOtherCenter == distanceToDraggedItemCenter) {
@@ -555,7 +561,7 @@ private fun <TItem> ReorderItemsIfNeeded(
                     val draggedItemStartAfterSwap = draggedItemOffsetAfterSwap.toFloat()
                     val draggedItemEndAfterSwap = draggedItemStartAfterSwap + draggedItemInfo.size
                     val isDraggedItemVisibleAfterSwap = draggedItemEndAfterSwap > listStart &&
-                        draggedItemStartAfterSwap < listEnd
+                            draggedItemStartAfterSwap < listEnd
                     if (!isDraggedItemVisibleAfterSwap) {
                         // We've just discovered that swapping the dragged item to its new position
                         // would cause it to leave the composition, so we skip the swap for now.
@@ -585,8 +591,8 @@ private fun <TItem> ReorderItemsIfNeeded(
                         (closestItemInfo.size - draggedItemInfo.size)
                             .takeIf { closestItemJump < 0f } ?: 0
                     val draggedItemCenterAfterSwap = closestItemInfo.offset +
-                        closestItemIndexOffsetChangeAfterSwap +
-                        (draggedItemInfo.size / 2f)
+                            closestItemIndexOffsetChangeAfterSwap +
+                            (draggedItemInfo.size / 2f)
                     if (abs(draggedItemInfo.index - closestItemInfo.index) == 1 &&
                         abs(closestItemCenterAfterSwap - currentDraggedItemCenter) <
                         abs(draggedItemCenterAfterSwap - currentDraggedItemCenter)
@@ -618,7 +624,7 @@ private fun <TItem> ReorderItemsIfNeeded(
                     val indicesToShift = if (closestItemInfo.index > draggedItemInfo.index) {
                         (draggedItemInfo.index + 1)..closestItemInfo.index
                     } else {
-                        closestItemInfo.index until draggedItemInfo.index
+                        closestItemInfo.index.fastCoerceAtLeast(fixedTopItemCount) until draggedItemInfo.index
                     }
                     for (i in indicesToShift) {
                         // Update the offset correction with the size of the item
@@ -835,7 +841,7 @@ private fun <TItem> EnsureDroppedItemIsFullyVisible(
     // This is just in case the logic above didn't do it for some reason.
     LaunchedEffect(lastDroppedItemState.value) {
         if (lastDroppedItemState.value != null) {
-            delay(1000)
+            delay(1000.milliseconds)
             lastDroppedItemState.value = null
         }
     }
