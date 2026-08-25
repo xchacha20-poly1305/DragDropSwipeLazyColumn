@@ -6,7 +6,7 @@ import androidx.compose.foundation.Indication
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.awaitVerticalDragOrCancellation
-import androidx.compose.foundation.gestures.awaitVerticalTouchSlopOrCancellation
+import androidx.compose.foundation.gestures.awaitVerticalPointerSlopOrCancellation
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.offset
@@ -306,9 +306,16 @@ private suspend fun AwaitPointerEventScope.handleDragDropGestures(
         }
     }
 
-    // Detect the drag gesture by listening for the first touch event that goes over the slop
+    // Detect the drag gesture by listening for the first pointer event that goes over the slop.
+    // The slop has to follow the pointer type: a mouse is far more precise than a finger, so a
+    // mouse drag must be recognised way before the touch slop would be reached. Otherwise, any
+    // other gesture that does use the mouse slop (such as a horizontal swipe implemented with
+    // anchored dragging) would always win the gesture race on desktop.
     val down = awaitFirstDown()
-    var drag = awaitVerticalTouchSlopOrCancellation(pointerId = down.id) { potentialDrag, _ ->
+    var drag = awaitVerticalPointerSlopOrCancellation(
+        pointerId = down.id,
+        pointerType = down.type,
+    ) { potentialDrag, _ ->
         val potentialDragDelta = potentialDrag.position.y - potentialDrag.previousPosition.y
         val horizontalDelta = potentialDrag.position.x - potentialDrag.previousPosition.x
         val verticalSlope = if (horizontalDelta != 0f) {

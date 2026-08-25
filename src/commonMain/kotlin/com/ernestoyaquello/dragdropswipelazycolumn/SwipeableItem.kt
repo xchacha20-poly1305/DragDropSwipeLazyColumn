@@ -12,7 +12,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.awaitHorizontalDragOrCancellation
-import androidx.compose.foundation.gestures.awaitHorizontalTouchSlopOrCancellation
+import androidx.compose.foundation.gestures.awaitHorizontalPointerSlopOrCancellation
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -27,7 +27,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -82,6 +81,7 @@ import kotlin.math.abs
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 import kotlin.math.sign
+import kotlin.time.Duration.Companion.milliseconds
 
 /**
  * A simple Composable that can be used to create a horizontally swipeable item.
@@ -546,7 +546,7 @@ private suspend fun PointerInputScope.handleTapGestures(
                 // This isn't perfect, and it makes the tap gesture feel a bit delayed, but I
                 // am not sure how to do it better.
                 // FIXME Do this better
-                delay(50)
+                delay(50.milliseconds)
 
                 val press = PressInteraction.Press(offset)
                 clickInteractionSource.emit(press)
@@ -620,10 +620,15 @@ private suspend fun AwaitPointerEventScope.handleSwipeGestures(
         }
     }
 
-    // Detect the swipe gesture by listening for the first touch event that goes over the slop
+    // Detect the swipe gesture by listening for the first pointer event that goes over the slop.
+    // As with the vertical drag gesture, the slop follows the pointer type so that both gestures
+    // stay equally sensitive and the horizontality check below is what decides between them.
     val down = awaitFirstDown()
     var swipeStarted = false
-    var swipe = awaitHorizontalTouchSlopOrCancellation(pointerId = down.id) { potentialSwipe, _ ->
+    var swipe = awaitHorizontalPointerSlopOrCancellation(
+        pointerId = down.id,
+        pointerType = down.type,
+    ) { potentialSwipe, _ ->
         // Only handle the swipe if the horizontal delta is greater than the vertical delta,
         // as we only care about horizontal swipes.
         val potentialSwipeDelta = potentialSwipe.position.x - potentialSwipe.previousPosition.x
